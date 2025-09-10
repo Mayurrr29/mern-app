@@ -176,8 +176,10 @@ function App() {
             <span>
               {user.username} - {user.email} - {user.number} - {user.message}
             </span>
+             <div className="actions">
             <button onClick={() => handleDelete(user._id)}>Delete</button>
             <button onClick={() => handleEdit(user._id)}>Edit</button>
+            </div>
           </li>
         ))}
       </ul>
