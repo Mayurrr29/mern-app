@@ -11,9 +11,9 @@ function App() {
     number: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
   const [editId, setEditId] = useState(null);
 
-  // Base URL for backend
   const API_BASE = "https://mern-app-backend-five.vercel.app";
 
   useEffect(() => {
@@ -29,11 +29,51 @@ function App() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    let newErrors = {};
+    const { username, email, number, message } = form;
+
+    if (!username.trim()) {
+      newErrors.username = "Name is required";
+    } else if (username.length < 3) {
+      newErrors.username = "Name must be at least 3 characters";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        newErrors.email = "Invalid email format";
+      }
+    }
+
+    if (!number.trim()) {
+      newErrors.number = "Phone number is required";
+    } else {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(number)) {
+        newErrors.number = "Phone number must be exactly 10 digits";
+      }
+    }
+
+    if (message.length > 250) {
+      newErrors.message = "Message cannot exceed 250 characters";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     try {
       if (editId) {
-        // Update existing user
         const res = await axios.put(`${API_BASE}/users/${editId}`, form);
         const updatedUsers = users.map((user) =>
           user._id === editId ? res.data : user
@@ -42,19 +82,18 @@ function App() {
         setEditId(null);
         toast.success("User updated successfully");
       } else {
-        // Create new user
         const res = await axios.post(`${API_BASE}/users`, form);
         setUsers([...users, res.data]);
         toast.success("User added successfully");
       }
 
-      // Reset form
       setForm({
         username: "",
         email: "",
         number: "",
         message: "",
       });
+      setErrors({});
     } catch (err) {
       console.log(err);
     }
@@ -93,38 +132,38 @@ function App() {
             placeholder="Username"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
-            required
           />
+          {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
           <br />
 
           <label htmlFor="email">Email:</label>
           <input
-            type="email"
+            type="text"
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
           />
+          {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
           <br />
 
           <label htmlFor="number">Number:</label>
           <input
-            type="number"
+            type="text"
             placeholder="Number"
             value={form.number}
             onChange={(e) => setForm({ ...form, number: e.target.value })}
-            required
           />
+          {errors.number && <p style={{ color: "red" }}>{errors.number}</p>}
           <br />
 
           <label htmlFor="message">Message:</label>
           <input
             type="text"
-            placeholder="Message"
+            placeholder="Message (Optional)"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
-            required
           />
+          {errors.message && <p style={{ color: "red" }}>{errors.message}</p>}
           <br />
 
           <button>{editId ? "Update" : "Submit"}</button>
