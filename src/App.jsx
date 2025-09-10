@@ -16,7 +16,7 @@ function App() {
    },[]);
   const fetchUsers= async()=>{
     try{
-      const res= await axios.get("https://mern-app-pi-five.vercel.app/users");
+      const res= await axios.get("https://mern-app-backend-five.vercel.app/");
       setUsers(res.data);
     }
     catch(err){
@@ -27,7 +27,7 @@ function App() {
     try{
       if(editId){
         // Update existing user
-        const res= await axios.put(`https://mern-app-pi-five.vercel.app/users/${editId}`,form);
+        const res= await axios.put(`https://mern-app-backend-five.vercel.app//${editId}`,form);
         const updatedUsers= users.map((user)=>
           user._id === editId ? res.data : user
         );
@@ -36,7 +36,7 @@ function App() {
         toast.success("User updated successfully");
       } else {
         // Create new user
-        const res= await axios.post("https://mern-app-pi-five.vercel.app/users",form);
+        const res= await axios.post("https://mern-app-backend-five.vercel.app/",form);
         setUsers([...users,res.data]);
        
        toast.success("User added successfully");
@@ -56,7 +56,7 @@ function App() {
 
  const handleDelete= async(id)=>{
   try{
-    await axios.delete(`https://mern-app-pi-five.vercel.app/users/${id}`);
+    await axios.delete(`https://mern-app-backend-five.vercel.app//${id}`);
     setUsers(users.filter((user)=>user._id !== id));
     toast("User deleted successfully");
   }
